@@ -2,13 +2,31 @@ package network
 
 import (
 	"encoding/json"
+	"errors"
 	"net/http"
 )
 
 type StandardResponse[T any] struct {
-	Message *string
-	Data    *T
-	Error   *string
+	Message *string `json:"message"`
+	Data    *T      `json:"data"`
+	Error   *string `json:"error"`
+}
+
+var (
+	ErrInternal      = errors.New("internal error")
+	ErrInvalidJSON   = errors.New("invalid JSON body")
+	ErrMissingFields = errors.New("missing fields")
+)
+
+func ReadBody[T any](r *http.Request) (*T, error) {
+	defer r.Body.Close()
+
+	var body T
+	if err := json.NewDecoder(r.Body).Decode(&body); err != nil {
+		return nil, ErrInternal
+	}
+
+	return &body, nil
 }
 
 func ResponseMessage(w http.ResponseWriter, code int, msg string) {
