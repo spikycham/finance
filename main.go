@@ -1,8 +1,12 @@
 package main
 
 import (
+	"context"
 	"net/http"
 	"os"
+	"os/signal"
+	"syscall"
+	"time"
 
 	"github.com/joho/godotenv"
 	"github.com/spikycham/finance/business"
@@ -42,10 +46,34 @@ func main() {
 	mux.HandleFunc("POST /api/v1/create", h.CreateItem)
 	mux.HandleFunc("GET  /api/v1/items", h.GetItems)
 
-	logger.Info("Service is running at " + PORT)
-	if err := http.ListenAndServe(":"+PORT, handler); err != nil {
-		logger.Error("Failed to start serving", err)
+	srv := &http.Server{
+		Addr:    ":" + PORT,
+		Handler: handler,
 	}
+
+	go func() {
+		if err := srv.ListenAndServe(); err != http.ErrServerClosed {
+			logger.Error("Failed to start serving", err)
+		}
+	}()
+
+	logger.Info("Service is running at " + PORT)
+
+	quit := make(chan os.Signal, 1)
+	signal.Notify(quit, syscall.SIGINT, syscall.SIGTERM)
+	<-quit
+
+	logger.Info("Shutting down...")
+
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
+
+	if err := srv.Shutdown(ctx); err != nil {
+		logger.Error("Shutdown failed", err)
+	}
+
+	db.Close()
+	logger.Info("Service stopped")
 }
 
 func welcome(w http.ResponseWriter, r *http.Request) {
