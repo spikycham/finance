@@ -34,6 +34,7 @@ func main() {
 	mux := http.NewServeMux()
 	handler := middleware.Chain(
 		mux,
+		middleware.Logger,
 		middleware.Auth(apiKey),
 	)
 
