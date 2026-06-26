@@ -1,12 +1,12 @@
 package main
 
 import (
-	"log"
 	"net/http"
 	"os"
 
 	"github.com/joho/godotenv"
 	"github.com/spikycham/finance/business"
+	"github.com/spikycham/finance/logger"
 	"github.com/spikycham/finance/middleware"
 	"github.com/spikycham/finance/network"
 )
@@ -16,7 +16,7 @@ const PORT = "3000"
 func main() {
 	db, err := business.Connect("data.db")
 	if err != nil {
-		log.Printf("Failed to connect to database: %v", err)
+		logger.Error("Failed to connect to database", err)
 	}
 
 	r := business.NewSQLiteRepository(db)
@@ -24,11 +24,11 @@ func main() {
 	h := business.NewHandler(s)
 
 	if err := godotenv.Load(); err != nil {
-		log.Printf("failed to load dotenv: %v", err)
+		logger.Error("failed to load dotenv", err)
 	}
 	apiKey := os.Getenv("API_KEY")
 	if apiKey == "" {
-		log.Print("no api key provided")
+		logger.Warn("no api key provided")
 	}
 
 	mux := http.NewServeMux()
@@ -42,9 +42,9 @@ func main() {
 	mux.HandleFunc("POST /api/v1/create", h.CreateItem)
 	mux.HandleFunc("GET  /api/v1/items", h.GetItems)
 
-	log.Printf("Service is running at %s...", PORT)
+	logger.Info("Service is running at " + PORT)
 	if err := http.ListenAndServe(":"+PORT, handler); err != nil {
-		log.Printf("Failed to start serving: %v", err)
+		logger.Error("Failed to start serving", err)
 	}
 }
 

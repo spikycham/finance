@@ -5,6 +5,7 @@ import (
 	"time"
 
 	"github.com/google/uuid"
+	"github.com/spikycham/finance/logger"
 	"github.com/spikycham/finance/network"
 )
 
@@ -23,7 +24,7 @@ func NewService(r Repository) *Service {
 
 func (s *Service) CreateRecordItem(ctx context.Context, item *Item) error {
 	if err := s.r.InsertItem(ctx, item); err != nil {
-		// TODO: add a logger
+		logger.Error("InsertItem failed", err)
 		return network.ErrInternal
 	}
 
@@ -33,7 +34,7 @@ func (s *Service) CreateRecordItem(ctx context.Context, item *Item) error {
 func (s *Service) GetYearItems(ctx context.Context, userID uuid.UUID, startTime time.Time) ([]Item, error) {
 	items, err := s.r.QueryItemsByUserIDAndTime(ctx, userID, startTime)
 	if err != nil {
-		// TODO: add a logger
+		logger.Error("QueryItemsByUserIDAndTime failed", err)
 		return nil, network.ErrInternal
 	}
 

@@ -1,9 +1,10 @@
 package middleware
 
 import (
-	"log"
 	"net/http"
 	"time"
+
+	"github.com/spikycham/finance/logger"
 )
 
 type responseWriter struct {
@@ -27,7 +28,7 @@ func Logger(next http.Handler) http.Handler {
 		rw := newResponseWriter(w)
 		next.ServeHTTP(rw, r)
 
-		log.Printf("%s %s %d %s %s %s",
+		logger.Infof("%s %s %d %s %s %s",
 			r.Method,
 			r.URL.Path,
 			rw.statusCode,
