@@ -49,7 +49,7 @@ func (h *Handler) CreateItem(w http.ResponseWriter, r *http.Request) {
 		Type:      body.Type,
 		Amount:    body.Amount,
 		Note:      body.Note,
-		CreatedAt: time.Now(),
+		CreatedAt: time.Now().UnixMilli(),
 	}); err != nil {
 		network.ResponseError(w, http.StatusInternalServerError, err.Error())
 		return

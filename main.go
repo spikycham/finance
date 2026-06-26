@@ -20,7 +20,7 @@ func main() {
 	s := business.NewService(r)
 	h := business.NewHandler(s)
 
-	http.HandleFunc("/", welcome)
+	http.HandleFunc("GET /", welcome)
 	http.HandleFunc("POST /api/v1/create", h.CreateItem)
 	http.HandleFunc("GET  /api/v1/items", h.GetItems)
 

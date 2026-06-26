@@ -59,7 +59,7 @@ func (r *SQLiteRepository) InsertItem(ctx context.Context, item *Item) error {
 		item.Type,
 		item.Amount,
 		item.Note,
-		item.CreatedAt.UnixMilli(),
+		item.CreatedAt,
 	); err != nil {
 		return err
 	}

@@ -1,8 +1,6 @@
 package business
 
 import (
-	"time"
-
 	"github.com/google/uuid"
 )
 
@@ -13,5 +11,5 @@ type Item struct {
 	Type      string
 	Amount    float64
 	Note      string
-	CreatedAt time.Time
+	CreatedAt int64
 }
