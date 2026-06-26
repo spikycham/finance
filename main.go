@@ -3,8 +3,11 @@ package main
 import (
 	"log"
 	"net/http"
+	"os"
 
+	"github.com/joho/godotenv"
 	"github.com/spikycham/finance/business"
+	"github.com/spikycham/finance/middleware"
 	"github.com/spikycham/finance/network"
 )
 
@@ -20,12 +23,26 @@ func main() {
 	s := business.NewService(r)
 	h := business.NewHandler(s)
 
-	http.HandleFunc("GET /", welcome)
-	http.HandleFunc("POST /api/v1/create", h.CreateItem)
-	http.HandleFunc("GET  /api/v1/items", h.GetItems)
+	if err := godotenv.Load(); err != nil {
+		log.Printf("failed to load dotenv: %v", err)
+	}
+	apiKey := os.Getenv("API_KEY")
+	if apiKey == "" {
+		log.Print("no api key provided")
+	}
+
+	mux := http.NewServeMux()
+	handler := middleware.Chain(
+		mux,
+		middleware.Auth(apiKey),
+	)
+
+	mux.HandleFunc("GET /", welcome)
+	mux.HandleFunc("POST /api/v1/create", h.CreateItem)
+	mux.HandleFunc("GET  /api/v1/items", h.GetItems)
 
 	log.Printf("Service is running at %s...", PORT)
-	if err := http.ListenAndServe(":"+PORT, nil); err != nil {
+	if err := http.ListenAndServe(":"+PORT, handler); err != nil {
 		log.Printf("Failed to start serving: %v", err)
 	}
 }
