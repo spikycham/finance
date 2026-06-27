@@ -11,7 +11,7 @@ import (
 
 type Repository interface {
 	InsertItem(ctx context.Context, item *Item) error
-	QueryItemsByUserIDAndTime(ctx context.Context, userID uuid.UUID, startTime time.Time) ([]Item, error)
+	QueryItemsByUserIDAndTime(ctx context.Context, userID uuid.UUID, startTime, endTime time.Time) ([]Item, error)
 }
 
 type Service struct {
@@ -31,8 +31,11 @@ func (s *Service) CreateRecordItem(ctx context.Context, item *Item) error {
 	return nil
 }
 
-func (s *Service) GetYearItems(ctx context.Context, userID uuid.UUID, startTime time.Time) ([]Item, error) {
-	items, err := s.r.QueryItemsByUserIDAndTime(ctx, userID, startTime)
+func (s *Service) GetYearItems(ctx context.Context, userID uuid.UUID, year int) ([]Item, error) {
+	startTime := time.Date(year, time.January, 1, 0, 0, 0, 0, time.UTC)
+	endTime := time.Date(year+1, time.January, 1, 0, 0, 0, 0, time.UTC)
+
+	items, err := s.r.QueryItemsByUserIDAndTime(ctx, userID, startTime, endTime)
 	if err != nil {
 		logger.Error("QueryItemsByUserIDAndTime failed", err)
 		return nil, network.ErrInternal
@@ -40,5 +43,3 @@ func (s *Service) GetYearItems(ctx context.Context, userID uuid.UUID, startTime 
 
 	return items, nil
 }
-
-// PERF: update and delete items from records.

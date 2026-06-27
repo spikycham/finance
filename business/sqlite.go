@@ -68,15 +68,16 @@ func (r *SQLiteRepository) InsertItem(ctx context.Context, item *Item) error {
 }
 
 // Get items in a full year.
-func (r *SQLiteRepository) QueryItemsByUserIDAndTime(ctx context.Context, userID uuid.UUID, startTime time.Time) ([]Item, error) {
+func (r *SQLiteRepository) QueryItemsByUserIDAndTime(ctx context.Context, userID uuid.UUID, startTime, endTime time.Time) ([]Item, error) {
 	rows, err := r.db.QueryContext(
 		ctx,
 		`SELECT id, user_id, type, amount, note, created_at
 		FROM items
-		WHERE user_id = ? AND created_at > ?
+		WHERE user_id = ? AND created_at >= ? AND created_at < ?
 		ORDER BY created_at`,
 		userID,
-		startTime.UnixMilli(),
+		startTime.Unix(),
+		endTime.Unix(),
 	)
 	if err != nil {
 		return nil, err

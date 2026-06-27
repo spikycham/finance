@@ -55,7 +55,7 @@ func TestSQLiteRepository_InsertItem(t *testing.T) {
 	ctx := context.Background()
 
 	userID := uuid.New()
-	now := time.Now().UnixMilli()
+	now := time.Now().Unix()
 
 	tests := []struct {
 		name    string
@@ -179,7 +179,7 @@ func TestSQLiteRepository_QueryItemsByUserIDAndTime(t *testing.T) {
 			name:      "get items from march",
 			userID:    userID,
 			startTime: baseTime.AddDate(0, 1, 0), // February 1st
-			wantCount: 1,                          // Only March
+			wantCount: 1,                         // Only March
 			wantErr:   false,
 		},
 		{

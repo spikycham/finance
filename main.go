@@ -1,3 +1,6 @@
+// PERF: recognize the service is shutting down, and response with notification.
+// PERF: update and delete items from records.
+
 package main
 
 import (
@@ -44,7 +47,7 @@ func main() {
 
 	mux.HandleFunc("GET /", welcome)
 	mux.HandleFunc("POST /api/v1/create", h.CreateItem)
-	mux.HandleFunc("GET  /api/v1/items", h.GetItems)
+	mux.HandleFunc("GET  /api/v1/items", h.GetYearlyItems)
 
 	srv := &http.Server{
 		Addr:    ":" + PORT,

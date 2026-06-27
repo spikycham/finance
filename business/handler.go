@@ -49,7 +49,7 @@ func (h *Handler) CreateItem(w http.ResponseWriter, r *http.Request) {
 		Type:      body.Type,
 		Amount:    body.Amount,
 		Note:      body.Note,
-		CreatedAt: time.Now().UnixMilli(),
+		CreatedAt: time.Now().Unix(),
 	}); err != nil {
 		network.ResponseError(w, http.StatusInternalServerError, err.Error())
 		return
@@ -58,22 +58,22 @@ func (h *Handler) CreateItem(w http.ResponseWriter, r *http.Request) {
 	network.ResponseMessage(w, http.StatusCreated, "success to create a new financial record")
 }
 
-func (h *Handler) GetItems(w http.ResponseWriter, r *http.Request) {
+func (h *Handler) GetYearlyItems(w http.ResponseWriter, r *http.Request) {
 	q := r.URL.Query()
 
 	userID, err := uuid.Parse(q.Get("user_id"))
 	if err != nil {
-		network.ResponseError(w, http.StatusBadRequest, network.ErrMissingFields.Error())
+		network.ResponseError(w, http.StatusBadRequest, "invalid parameter user_id")
 		return
 	}
 
-	startTime, err := strconv.Atoi(q.Get("start_time"))
+	year, err := strconv.Atoi(q.Get("year"))
 	if err != nil {
-		network.ResponseError(w, http.StatusBadRequest, network.ErrMissingFields.Error())
+		network.ResponseError(w, http.StatusBadRequest, "invalid parameter year")
 		return
 	}
 
-	items, err := h.s.GetYearItems(r.Context(), userID, time.UnixMilli(int64(startTime)))
+	items, err := h.s.GetYearItems(r.Context(), userID, year)
 	if err != nil {
 		network.ResponseError(w, http.StatusInternalServerError, err.Error())
 		return
