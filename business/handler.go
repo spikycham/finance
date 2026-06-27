@@ -16,7 +16,7 @@ type Handler struct {
 
 type CreateItemRequest struct {
 	UserID uuid.UUID `json:"user_id" validate:"required"`
-	Type   string    `json:"type" validate:"required,oneof=food supply transport treatment study job wear workout entertainment house income others"`
+	Type   string    `json:"type" validate:"required,oneof=food utilities transport treatment shopping entertainment rent investment others income"`
 	Amount float64   `json:"amount" validate:"required,gt=0"`
 	Note   string    `json:"note" validate:"max=100"`
 }
