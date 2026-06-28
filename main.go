@@ -43,6 +43,7 @@ func main() {
 		mux,
 		middleware.Logger,
 		middleware.Auth(apiKey),
+		middleware.CORS,
 	)
 
 	mux.HandleFunc("GET /", welcome)
