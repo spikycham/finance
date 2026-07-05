@@ -42,8 +42,8 @@ func main() {
 	handler := middleware.Chain(
 		mux,
 		middleware.Logger,
-		middleware.Auth(apiKey),
 		middleware.CORS,
+		middleware.Auth(apiKey),
 	)
 
 	mux.HandleFunc("GET /", welcome)

@@ -2,3 +2,5 @@
 .env
 .claude
 insert.sh
+backup
+*.tar.gz

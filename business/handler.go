@@ -16,7 +16,7 @@ type Handler struct {
 
 type CreateItemRequest struct {
 	UserID uuid.UUID `json:"user_id" validate:"required"`
-	Type   string    `json:"type" validate:"required,oneof=food utilities transport treatment shopping entertainment rent investment others income"`
+	Type   string    `json:"type" validate:"required,oneof=food utility transport treatment shopping entertainment rent investment others income"`
 	Amount float64   `json:"amount" validate:"required,gt=0"`
 	Note   string    `json:"note" validate:"max=100"`
 }
@@ -55,7 +55,7 @@ func (h *Handler) CreateItem(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	network.ResponseMessage(w, http.StatusCreated, "success to create a new financial record")
+	network.ResponseMessage(w, http.StatusCreated, "Success to Create A New Financial Record!")
 }
 
 func (h *Handler) GetYearlyItems(w http.ResponseWriter, r *http.Request) {
