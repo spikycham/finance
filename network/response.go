@@ -1,9 +1,11 @@
 package network
 
 import (
+	"bytes"
 	"encoding/json"
 	"errors"
 	"net/http"
+	"strconv"
 )
 
 type StandardResponse[T any] struct {
@@ -48,10 +50,15 @@ func ResponseError(w http.ResponseWriter, code int, err string) {
 }
 
 func ResponseJSON[T any](w http.ResponseWriter, code int, data T) {
-	w.WriteHeader(code)
-	json.NewEncoder(w).Encode(&StandardResponse[T]{
+	var buf bytes.Buffer
+	json.NewEncoder(&buf).Encode(&StandardResponse[T]{
 		Message: nil,
 		Error:   nil,
 		Data:    &data,
 	})
+
+	w.Header().Set("Content-Type", "application/json")
+	w.Header().Set("Content-Length", strconv.Itoa(buf.Len()))
+	w.WriteHeader(code)
+	w.Write(buf.Bytes())
 }
