@@ -103,7 +103,7 @@ func (h *Handler) ValidatePin(w http.ResponseWriter, r *http.Request) {
 
 	pin := os.Getenv("pin")
 	if body.Pin != pin {
-		network.ResponseError(w, http.StatusUnauthorized, err.Error())
+		network.ResponseError(w, http.StatusUnauthorized, "Invalid PIN")
 		return
 
 	}
