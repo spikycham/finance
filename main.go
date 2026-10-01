@@ -47,8 +47,9 @@ func main() {
 	)
 
 	mux.HandleFunc("GET /", welcome)
-	mux.HandleFunc("POST /api/v1/create", h.CreateItem)
-	mux.HandleFunc("GET  /api/v1/items", h.GetYearlyItems)
+	mux.HandleFunc("POST /api/v2/create", h.CreateItem)
+	mux.HandleFunc("GET  /api/v2/items", h.GetYearlyItems)
+	mux.HandleFunc("POST /api/v2/pin", h.ValidatePin)
 
 	srv := &http.Server{
 		Addr:    ":" + PORT,

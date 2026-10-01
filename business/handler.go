@@ -2,6 +2,7 @@ package business
 
 import (
 	"net/http"
+	"os"
 	"strconv"
 	"time"
 
@@ -82,4 +83,30 @@ func (h *Handler) GetYearlyItems(w http.ResponseWriter, r *http.Request) {
 	network.ResponseJSON(w, http.StatusOK, &GetItemsResponse{
 		Items: items,
 	})
+}
+
+type RequestValidatePin struct {
+	Pin string `json:"pin" validate:"required"`
+}
+
+func (h *Handler) ValidatePin(w http.ResponseWriter, r *http.Request) {
+	body, err := network.ReadBody[RequestValidatePin](r)
+	if err != nil {
+		network.ResponseError(w, http.StatusBadRequest, network.ErrInvalidJSON.Error())
+		return
+	}
+
+	if err := validate.Struct(body); err != nil {
+		network.ResponseError(w, http.StatusBadRequest, network.ErrMissingFields.Error())
+		return
+	}
+
+	pin := os.Getenv("pin")
+	if body.Pin != pin {
+		network.ResponseError(w, http.StatusUnauthorized, err.Error())
+		return
+
+	}
+
+	network.ResponseMessage(w, http.StatusOK, "User validated!")
 }
