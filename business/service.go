@@ -43,3 +43,16 @@ func (s *Service) GetYearItems(ctx context.Context, userID uuid.UUID, year int) 
 
 	return items, nil
 }
+
+func (s *Service) GetMonthItems(ctx context.Context, useId uuid.UUID, year, month int) ([]Item, error) {
+	startTime := time.Date(year, time.Month(month-1), 1, 0, 0, 0, 0, time.UTC)
+	endTime := time.Date(year, time.Month(month), 1, 0, 0, 0, 0, time.UTC)
+
+	items, err := s.r.QueryItemsByUserIDAndTime(ctx, useId, startTime, endTime)
+	if err != nil {
+		logger.Error("QueryItemsByUserIDAndTime failed", err)
+		return nil, network.ErrInternal
+	}
+
+	return items, err
+}

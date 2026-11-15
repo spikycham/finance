@@ -85,6 +85,38 @@ func (h *Handler) GetYearlyItems(w http.ResponseWriter, r *http.Request) {
 	})
 }
 
+func (h *Handler) GetMonthlyItems(w http.ResponseWriter, r *http.Request) {
+	q := r.URL.Query()
+
+	userID, err := uuid.Parse(q.Get("user_id"))
+	if err != nil {
+		network.ResponseError(w, http.StatusBadRequest, "invalid parameter user_id")
+		return
+	}
+
+	year, err := strconv.Atoi(q.Get("year"))
+	if err != nil {
+		network.ResponseError(w, http.StatusBadRequest, "invalid parameter year")
+		return
+	}
+
+	month, err := strconv.Atoi(q.Get("month"))
+	if err != nil {
+		network.ResponseError(w, http.StatusBadRequest, "invalid parameter month")
+		return
+	}
+
+	items, err := h.s.GetMonthItems(r.Context(), userID, year, month)
+	if err != nil {
+		network.ResponseError(w, http.StatusInternalServerError, err.Error())
+		return
+	}
+
+	network.ResponseJSON(w, http.StatusOK, &GetItemsResponse{
+		Items: items,
+	})
+}
+
 type RequestValidatePin struct {
 	Pin string `json:"pin" validate:"required"`
 }
