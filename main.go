@@ -49,6 +49,7 @@ func main() {
 	mux.HandleFunc("GET /", welcome)
 	mux.HandleFunc("POST /api/v2/create", h.CreateItem)
 	mux.HandleFunc("GET  /api/v2/items", h.GetYearlyItems)
+	mux.HandleFunc("GET /api/v3/items", h.GetMonthlyItems)
 	mux.HandleFunc("POST /api/v2/pin", h.ValidatePin)
 
 	srv := &http.Server{
